@@ -69,9 +69,9 @@ class CalendarDay
 
             //Check if we already have slots in this period
             if (!empty($this->slots)) {
-                foreach ($this->slots as $appointment) {
-                    if (Carbon::parse($appointment->starts_at)->isBefore($end) &&
-                        $start->isBefore(Carbon::parse($appointment->ends_at))) {
+                foreach ($this->slots as $slot) {
+                    if ($slot->startsAt->isBefore($end) &&
+                        $start->isBefore(Carbon::parse($slot->endsAt))) {
                         $add = false;
                         break;
                     }

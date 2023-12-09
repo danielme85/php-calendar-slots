@@ -1,7 +1,6 @@
 <?php
 declare(strict_types=1);
 
-
 use Danielme85\PhpCalendarSlots\Calendar;
 use Danielme85\PhpCalendarSlots\CalendarDay;
 use Danielme85\PhpCalendarSlots\CalendarDaySlot;
@@ -22,8 +21,6 @@ final class CalendarTest extends TestCase
 
         $calendar->buildDays();
         $this->assertNotEmpty($calendar->days);
-
-        //d($calendar->toArray());
 
     }
 
