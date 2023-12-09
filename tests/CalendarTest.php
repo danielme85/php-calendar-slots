@@ -23,7 +23,7 @@ final class CalendarTest extends TestCase
         $calendar->buildDays();
         $this->assertNotEmpty($calendar->days);
 
-        d($calendar->toArray());
+        //d($calendar->toArray());
 
     }
 
