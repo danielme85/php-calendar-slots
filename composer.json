@@ -1,0 +1,25 @@
+{
+    "name": "danielme85/php-calendar-slots",
+    "description": "This class generates calendar timeslots based on availability and international timezones.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Danielme85\\PhpCalendarSlots\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Daniel Mellum",
+            "email": "mellum@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "nesbot/carbon": "^2.72"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10",
+        "kint-php/kint": "^5.1"
+    }
+}
