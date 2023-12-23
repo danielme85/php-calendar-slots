@@ -9,8 +9,14 @@ use Carbon\Carbon;
 
 final class CalendarTest extends TestCase
 {
+    /**
+     * @var string
+     */
     protected $tz = 'America/New_York';
 
+    /**
+     * @return void
+     */
     public function testCanAddDays()
     {
         $calendar = new Calendar();
@@ -21,7 +27,19 @@ final class CalendarTest extends TestCase
 
         $calendar->buildDays();
         $this->assertNotEmpty($calendar->days);
+    }
 
+    /**
+     * @return void
+     */
+    public function testDayAccessor()
+    {
+        $calendar = new Calendar();
+        $calendar->buildDays();
+
+        $this->assertNotEmpty($calendar->getDay(0));
+        $this->assertNotEmpty($calendar->getDay( new (Carbon::today())));
+        $this->assertNotEmpty($calendar->getDay(Carbon::today()->format('Y-m-d')));
     }
 
 }

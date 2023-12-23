@@ -7,15 +7,26 @@ use Carbon\CarbonInterval;
 
 class CalendarDay
 {
+    use CalendarTools;
+
     /**
      * @var Carbon
      */
     public Carbon $date;
 
+    /**
+     * @var string
+     */
     public string $startAt;
 
+    /**
+     * @var string
+     */
     public string $endAt;
 
+    /**
+     * @var int
+     */
     public int $interval;
 
     /**
@@ -23,15 +34,25 @@ class CalendarDay
      */
     public array $slots;
 
-    public function __construct(Carbon $date, string $startAt, string $endAt, int $interval = 60)
+    /**
+     * @param string|Carbon $date
+     * @param string $startAt
+     * @param string $endAt
+     * @param int $interval
+     */
+    public function __construct(string|Carbon $date, string $startAt, string $endAt, int $interval = 60)
     {
-        $this->date = $date;
+        $this->date = self::createCarbonDateIfNeeded($date);
         $this->startAt = $startAt;
         $this->endAt = $endAt;
         $this->interval = $interval;
     }
 
-    public function addSlots(array $slots)
+    /**
+     * @param array $slots
+     * @return self
+     */
+    public function addSlots(array $slots): self
     {
         foreach ($slots as $slot) {
             $this->addSlot($slot);
@@ -40,15 +61,21 @@ class CalendarDay
         return $this;
     }
 
-    public function addSlot(CalendarDaySlot $slot)
+    /**
+     * @param CalendarDaySlot $slot
+     * @return self
+     */
+    public function addSlot(CalendarDaySlot $slot): self
     {
         $this->slots[] = $slot;
+
+        return $this;
     }
 
     /**
      * @return void
      */
-    public function buildSlots()
+    public function buildSlots(): void
     {
         $from = $this->date->copy();
         $to = $this->date->copy();

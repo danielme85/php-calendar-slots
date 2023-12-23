@@ -7,23 +7,31 @@ use Carbon\CarbonPeriod;
 
 class Calendar
 {
+    use CalendarTools;
+
     /**
      * @var int
      */
     public int $interval;
 
     /**
-     * @var string
+     * @var Carbon
      */
-    public string $startDate;
+    public Carbon $startDate;
+
+    /**
+     * @var Carbon
+     */
+    public Carbon $endDate;
 
     /**
      * @var string
      */
-    public string $endDate;
-
     public string $defaultStartTime;
 
+    /**
+     * @var string
+     */
     public string $defaultEndTime;
 
     /**
@@ -36,15 +44,23 @@ class Calendar
      */
     public array $days;
 
-    public function __construct(string $startDate = null,
-                                string $endDate = null,
+    /**
+     * @param string|Carbon|null $startDate
+     * @param string|Carbon|null $endDate
+     * @param string $starTime
+     * @param string $endTime
+     * @param int $interval
+     * @param string $calendarTimeZone
+     */
+    public function __construct(string|Carbon $startDate = null,
+                                string|Carbon $endDate = null,
                                 string $starTime = '09:00',
                                 string $endTime = '17:00',
                                 int    $interval = 30,
                                 string $calendarTimeZone = 'UTC')
     {
-        $this->startDate = $startDate ?? Carbon::today()->format('Y-m-d');
-        $this->endDate = $endDate ?? Carbon::today()->format('Y-m-d');
+        $this->startDate = self::createCarbonDateIfNeeded($startDate) ?? new (Carbon::today());
+        $this->endDate = self::createCarbonDateIfNeeded($endDate) ?? new (Carbon::today());
         $this->defaultStartTime = $starTime;
         $this->defaultEndTime = $endTime;
         $this->timeZone = $calendarTimeZone;
@@ -52,23 +68,23 @@ class Calendar
     }
 
     /**
-     * @param string $startDate
+     * @param string|Carbon $startDate
      * @return $this
      */
-    public function setStartDate(string $startDate): self
+    public function setStartDate(string|Carbon $startDate): self
     {
-        $this->startDate = $startDate;
+        $this->startDate = self::createCarbonDateIfNeeded($startDate);
 
         return $this;
     }
 
     /**
-     * @param string $endDate
+     * @param string|Carbon $endDate
      * @return $this
      */
-    public function setEndDate(string $endDate): self
+    public function setEndDate(string|Carbon $endDate): self
     {
-        $this->endDate = $endDate;
+        $this->endDate = self::createCarbonDateIfNeeded($endDate);
 
         return $this;
     }
@@ -110,8 +126,8 @@ class Calendar
      * Static shortcut to build a calendar.
      * Calendar::build();
      *
-     * @param string|null $startDate
-     * @param string|null $endDate
+     * @param string|Carbon|null $startDate
+     * @param string|Carbon|null $endDate
      * @param string $starTime
      * @param string $endTime
      * @param int $interval
@@ -119,8 +135,8 @@ class Calendar
      *
      * @return Calendar
      */
-    public static function build(string $startDate = null,
-                                 string $endDate = null,
+    public static function build(string|Carbon $startDate = null,
+                                 string|Carbon $endDate = null,
                                  string $starTime = '09:00',
                                  string $endTime = '17:00',
                                  int    $interval = 30,
@@ -160,10 +176,7 @@ class Calendar
      */
     public function buildDays(): self
     {
-        $dateRange = CarbonPeriod::create(
-            Carbon::parse($this->startDate, $this->timeZone),
-            Carbon::parse($this->endDate, $this->timeZone)
-        );
+        $dateRange = CarbonPeriod::create($this->startDate, $this->endDate);
         foreach ($dateRange as $date) {
             $dateformat = $date->format('Y-m-d');
             if (!isset($this->days[$dateformat]) || empty($this->days[$dateformat])) {
@@ -175,12 +188,25 @@ class Calendar
             }
         }
 
+        //Add time slots in each day
         foreach ($this->days as $day)
         {
             $day->buildSlots();
         }
 
         return $this;
+    }
+
+    public function getDay(string|Carbon|int $date): ?CalendarDay
+    {
+        if (is_numeric($date)) {
+            $date = array_keys($this->days)[$date];
+        }
+        else if (is_object($date) && get_class($date) === Carbon::class) {
+            $date = $date->format('Y-m-d');
+        }
+
+        return $this->days[$date] ?? null;
     }
 
     /**

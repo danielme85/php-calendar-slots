@@ -21,6 +21,11 @@ class CalendarDaySlot
      */
     public bool $available;
 
+    /**
+     * @param Carbon $start
+     * @param Carbon $end
+     * @param bool $available
+     */
     public function __construct(Carbon $start, Carbon $end, bool $available = true)
     {
         $this->startsAt = $start;
